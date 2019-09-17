@@ -13,10 +13,12 @@ namespace luidy_bus_test.Controllers
     public class BenefitController : Controller
     {
         private readonly ServiceBusTopic _serviceBusTopic;
+        private readonly EventHubSender _eventHubSender;
 
-        public BenefitController(ServiceBusTopic serviceBusTopic)
+        public BenefitController(ServiceBusTopic serviceBusTopic, EventHubSender eventHubSender)
         {
             _serviceBusTopic = serviceBusTopic;
+            _eventHubSender = eventHubSender;
         }
 
         [HttpPost]
@@ -25,6 +27,7 @@ namespace luidy_bus_test.Controllers
         {            
             // Send this to the bus for the other services
             await _serviceBusTopic.SendMessage(request);
+            await _eventHubSender.PublishAsync(request);
 
             return Ok(request);
         }
