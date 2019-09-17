@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using luidy_bus_test.Model;
+using luidy_bus_test.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiceBusMessaging;
@@ -11,11 +12,11 @@ namespace luidy_bus_test.Controllers
     [ApiController]
     public class BenefitController : Controller
     {
-        private readonly ServiceBusTopicSender _serviceBusTopicSender;
+        private readonly ServiceBusTopic _serviceBusTopic;
 
-        public BenefitController(ServiceBusTopicSender serviceBusTopicSender)
+        public BenefitController(ServiceBusTopic serviceBusTopic)
         {
-            _serviceBusTopicSender = serviceBusTopicSender;
+            _serviceBusTopic = serviceBusTopic;
         }
 
         [HttpPost]
@@ -23,7 +24,7 @@ namespace luidy_bus_test.Controllers
         public async Task<IActionResult> Create([FromBody][Required] MyPayload request)
         {            
             // Send this to the bus for the other services
-            await _serviceBusTopicSender.SendMessage(request);
+            await _serviceBusTopic.SendMessage(request);
 
             return Ok(request);
         }
